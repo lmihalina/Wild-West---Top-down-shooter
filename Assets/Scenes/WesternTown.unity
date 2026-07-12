@@ -268,6 +268,18 @@ PrefabInstance:
       propertyPath: Speed
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 3640774743337632667, guid: 70a9a90f34fbf364fb091d90a9b121a9, type: 3}
+      propertyPath: ShootAction.m_Name
+      value: Shoot
+      objectReference: {fileID: 0}
+    - target: {fileID: 3640774743337632667, guid: 70a9a90f34fbf364fb091d90a9b121a9, type: 3}
+      propertyPath: ShootAction.m_Type
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3640774743337632667, guid: 70a9a90f34fbf364fb091d90a9b121a9, type: 3}
+      propertyPath: ShootAction.m_ExpectedControlType
+      value: Button
+      objectReference: {fileID: 0}
     - target: {fileID: 7421101015069357736, guid: 70a9a90f34fbf364fb091d90a9b121a9, type: 3}
       propertyPath: m_Name
       value: Player

@@ -193,6 +193,7 @@ GameObject:
   - component: {fileID: 8512455627506903917}
   - component: {fileID: 6284121571675764521}
   - component: {fileID: 3640774743337632667}
+  - component: {fileID: 2280487552185802239}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -345,4 +346,43 @@ MonoBehaviour:
       m_Action: Move
       m_Flags: 8
     m_Flags: 0
+  ShootAction:
+    m_Name: Shoot
+    m_Type: 1
+    m_ExpectedControlType: Button
+    m_Id: 3ce98b2d-2f05-44b8-bd97-fdfd278854ee
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 9e7026b8-3043-4e0e-a988-31b5f80e9159
+      m_Path: <Keyboard>/space
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Shoot
+      m_Flags: 0
+    - m_Name: 
+      m_Id: 649ce2c0-d2bc-40f7-b1db-71da6241153d
+      m_Path: <Mouse>/leftButton
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Shoot
+      m_Flags: 0
+    m_Flags: 0
   Speed: 4
+--- !u!114 &2280487552185802239
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7421101015069357736}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b285f50d6279c734e93eeb4aa791876f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Gun
+  BulletPrefab: {fileID: 5450332262937697909, guid: 2d7ef5416b8298248a18c4720e66a339, type: 3}
+  ShootingCooldown: 1
