@@ -102,6 +102,7 @@ GameObject:
   - component: {fileID: 4211625001955845400}
   - component: {fileID: 6683849749754633781}
   - component: {fileID: -7305680808664508159}
+  - component: {fileID: 3450986573299244184}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
@@ -166,7 +167,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyController
   Distance: 10
-  Speed: 2
+  Velocity: 1
+  Direction: {x: -1, y: 0}
+--- !u!114 &3450986573299244184
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8779133499172676128}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b285f50d6279c734e93eeb4aa791876f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Gun
+  BulletPrefab: {fileID: 5450332262937697909, guid: 2d7ef5416b8298248a18c4720e66a339, type: 3}
+  ShootingCooldown: 2
 --- !u!1 &9078413942903879779
 GameObject:
   m_ObjectHideFlags: 0

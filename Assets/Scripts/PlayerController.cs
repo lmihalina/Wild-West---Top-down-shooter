@@ -43,7 +43,7 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Vector2 newPosition = (Vector2) rb.position + Movement * Speed * Time.deltaTime;        
+        Vector2 newPosition = (Vector2) rb.position + Movement * Speed * Time.fixedDeltaTime;        
         rb.MovePosition(newPosition);
     }
 }
