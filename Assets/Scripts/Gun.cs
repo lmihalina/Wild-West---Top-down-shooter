@@ -5,11 +5,17 @@ public class Gun : MonoBehaviour
     //properties
     public GameObject BulletPrefab;
     public float ShootingCooldown = 2f;
-
     private float Cooldown = 0;
-    
+
+    //components
+    BoxCollider2D shooterCollider;
+
     //lifecycle methods
-  
+    private void Start()
+    {
+        shooterCollider = GetComponent<BoxCollider2D>();
+    }
+
     void Update()
     {
         if (Cooldown - Time.deltaTime > 0)
@@ -24,6 +30,8 @@ public class Gun : MonoBehaviour
         if(Cooldown == 0)
         {
             GameObject bulletObject = Instantiate(BulletPrefab, position, Quaternion.identity);
+            Physics2D.IgnoreCollision(shooterCollider, bulletObject.GetComponent<CircleCollider2D>());
+
             Bullet bullet = bulletObject.GetComponent<Bullet>();
             bullet.Launch(direction, 10);
             Cooldown = ShootingCooldown;

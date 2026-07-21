@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour
     //components
     private Rigidbody2D rb;
     private Gun gun;
+    private Health health;
 
     //lifecycle methods
     private void Start()
@@ -24,6 +25,8 @@ public class PlayerController : MonoBehaviour
 
         rb = GetComponent<Rigidbody2D>();
         gun = GetComponent<Gun>();
+        health = GetComponent<Health>();
+        health.OnDeath += () => Destroy(gameObject);
     }
 
     private void Update()

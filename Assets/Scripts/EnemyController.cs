@@ -18,16 +18,19 @@ public class EnemyController : MonoBehaviour
     //components
     Rigidbody2D rb;
     Gun gun;
+    Health health;
 
     //lifecycle methods
     private void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
-        gun = GetComponent<Gun>();
-
         Direction.Normalize();
         RecalculateSightDirections();
         PatrolsUntilBreak = Random.Range(1, 7 + 1);
+
+        rb = GetComponent<Rigidbody2D>();
+        gun = GetComponent<Gun>();
+        health = GetComponent<Health>();
+        health.OnDeath += () => Destroy(gameObject);
     }
     private void FixedUpdate()
     {
@@ -49,18 +52,10 @@ public class EnemyController : MonoBehaviour
         if (DistanceTraveled < Distance)
         {
             float movementDistance = Velocity * Time.fixedDeltaTime;
+            DistanceTraveled += movementDistance;
             Vector2 newPosition = rb.position + Direction * movementDistance;
-
-            RaycastHit2D obstacleInWay = Physics2D.Raycast(rb.position, Direction, movementDistance + 0.25f);
-            if (obstacleInWay)
-            {
-                DistanceTraveled = Distance; // turn around next frame
-            }
-            else
-            {
-                DistanceTraveled += movementDistance;
-                rb.MovePosition(newPosition);
-            }
+            rb.MovePosition(newPosition);
+            
         }
         else
         {

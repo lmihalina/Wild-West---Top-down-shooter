@@ -284,6 +284,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 7586310081244679814, guid: 70a9a90f34fbf364fb091d90a9b121a9, type: 3}
+      propertyPath: MaxHealth
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 8512455627506903917, guid: 70a9a90f34fbf364fb091d90a9b121a9, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
