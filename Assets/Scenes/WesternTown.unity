@@ -2526,15 +2526,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7586310081244679814, guid: 70a9a90f34fbf364fb091d90a9b121a9, type: 3}
       propertyPath: MaxHealth
-      value: 2000
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 7964343349528619364, guid: 70a9a90f34fbf364fb091d90a9b121a9, type: 3}
+      propertyPath: m_SortingOrder
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 8512455627506903917, guid: 70a9a90f34fbf364fb091d90a9b121a9, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -7.37
+      value: -5.79
       objectReference: {fileID: 0}
     - target: {fileID: 8512455627506903917, guid: 70a9a90f34fbf364fb091d90a9b121a9, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.33
+      value: 0.16
       objectReference: {fileID: 0}
     - target: {fileID: 8512455627506903917, guid: 70a9a90f34fbf364fb091d90a9b121a9, type: 3}
       propertyPath: m_LocalPosition.z

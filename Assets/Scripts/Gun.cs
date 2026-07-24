@@ -31,6 +31,7 @@ public class Gun : MonoBehaviour
     {
         if(Cooldown == 0)
         {
+            animator?.SetTrigger("IsShooting");
             GameObject bulletObject = Instantiate(BulletPrefab, position, Quaternion.identity);
             Physics2D.IgnoreCollision(shooterCollider, bulletObject.GetComponent<CircleCollider2D>());
 

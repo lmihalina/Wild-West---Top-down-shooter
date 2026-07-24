@@ -21,6 +21,7 @@ public class EnemyController : MonoBehaviour
     Gun gun;
     Health health;
     Animator animator;
+    BoxCollider2D boxCollider;
 
     //lifecycle methods
     private void Start()
@@ -33,8 +34,10 @@ public class EnemyController : MonoBehaviour
         gun = GetComponent<Gun>();
         animator = GetComponent<Animator>();
         health = GetComponent<Health>();
+        boxCollider = GetComponent<BoxCollider2D>();
+
         health.OnHit += () => animator.SetTrigger("IsHit");
-        health.OnDeath += () => { animator.SetTrigger("IsDead"); IsDead = true; };
+        health.OnDeath += () => { animator.SetTrigger("IsDead"); IsDead = true; boxCollider.enabled = false; };
     }
     private void FixedUpdate()
     {
@@ -101,7 +104,6 @@ public class EnemyController : MonoBehaviour
             RaycastHit2D hit = Physics2D.Raycast(rb.position, direction, 4f, LayerMask.GetMask("Player"));
             if (hit.collider != null)
             {
-                animator.SetTrigger("IsShooting");
                 gun.Shoot(rb.position, direction);
                 break;
             }
