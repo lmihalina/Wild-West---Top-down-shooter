@@ -9,11 +9,13 @@ public class Gun : MonoBehaviour
 
     //components
     BoxCollider2D shooterCollider;
+    Animator animator;
 
     //lifecycle methods
     private void Start()
     {
         shooterCollider = GetComponent<BoxCollider2D>();
+        animator = GetComponent<Animator>();
     }
 
     void Update()

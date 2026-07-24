@@ -7,6 +7,9 @@ public class Health : MonoBehaviour
     public int MaxHealth = 100;
     public int CurrentHealth { get; private set; }
     public event Action OnDeath;
+    public event Action OnHit;
+
+    //components
 
     //lifecycle methods
     private void Start()
@@ -26,11 +29,14 @@ public class Health : MonoBehaviour
     public void DecreaseHealth(int health)
     {
         if(CurrentHealth - health > 0)
+        {
             CurrentHealth -= health;
+            OnHit?.Invoke();
+        }
         else
         {
             CurrentHealth = 0;
-            OnDeath.Invoke();
+            OnDeath?.Invoke();
         }
     }
 }

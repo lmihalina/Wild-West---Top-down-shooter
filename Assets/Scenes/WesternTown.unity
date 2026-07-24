@@ -178,7 +178,7 @@ TilemapRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 762e151f2d133ef488df644318762da9, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2526,15 +2526,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7586310081244679814, guid: 70a9a90f34fbf364fb091d90a9b121a9, type: 3}
       propertyPath: MaxHealth
-      value: 100
+      value: 2000
       objectReference: {fileID: 0}
     - target: {fileID: 8512455627506903917, guid: 70a9a90f34fbf364fb091d90a9b121a9, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -7.37
       objectReference: {fileID: 0}
     - target: {fileID: 8512455627506903917, guid: 70a9a90f34fbf364fb091d90a9b121a9, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -0.33
       objectReference: {fileID: 0}
     - target: {fileID: 8512455627506903917, guid: 70a9a90f34fbf364fb091d90a9b121a9, type: 3}
       propertyPath: m_LocalPosition.z
@@ -2591,15 +2591,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -7305680808664508159, guid: 96c85c0318c7449478cfbfe5fda585dd, type: 3}
       propertyPath: Velocity
-      value: 2
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: -7305680808664508159, guid: 96c85c0318c7449478cfbfe5fda585dd, type: 3}
       propertyPath: Direction.x
-      value: -1
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -7305680808664508159, guid: 96c85c0318c7449478cfbfe5fda585dd, type: 3}
       propertyPath: Direction.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2647907507243150109, guid: 96c85c0318c7449478cfbfe5fda585dd, type: 3}
+      propertyPath: MaxHealth
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 3450986573299244184, guid: 96c85c0318c7449478cfbfe5fda585dd, type: 3}
       propertyPath: ShootingCooldown
@@ -2607,11 +2611,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4211625001955845400, guid: 96c85c0318c7449478cfbfe5fda585dd, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 7.7
+      value: 0.85
       objectReference: {fileID: 0}
     - target: {fileID: 4211625001955845400, guid: 96c85c0318c7449478cfbfe5fda585dd, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.02
+      value: 0.07
       objectReference: {fileID: 0}
     - target: {fileID: 4211625001955845400, guid: 96c85c0318c7449478cfbfe5fda585dd, type: 3}
       propertyPath: m_LocalPosition.z
@@ -2643,6 +2647,22 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4211625001955845400, guid: 96c85c0318c7449478cfbfe5fda585dd, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6683849749754633781, guid: 96c85c0318c7449478cfbfe5fda585dd, type: 3}
+      propertyPath: m_Mass
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6683849749754633781, guid: 96c85c0318c7449478cfbfe5fda585dd, type: 3}
+      propertyPath: m_BodyType
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6683849749754633781, guid: 96c85c0318c7449478cfbfe5fda585dd, type: 3}
+      propertyPath: m_LinearDamping
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6683849749754633781, guid: 96c85c0318c7449478cfbfe5fda585dd, type: 3}
+      propertyPath: m_CollisionDetection
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8779133499172676128, guid: 96c85c0318c7449478cfbfe5fda585dd, type: 3}

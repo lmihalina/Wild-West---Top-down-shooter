@@ -7,6 +7,7 @@ public class EnemyController : MonoBehaviour
     public float Velocity = 1f;
     public Vector2 Direction = Vector2.left;
     private float DistanceTraveled = 0;
+    private bool IsDead = false;
 
     //break
     private float RemainingBreakTime = 0f;
@@ -19,6 +20,7 @@ public class EnemyController : MonoBehaviour
     Rigidbody2D rb;
     Gun gun;
     Health health;
+    Animator animator;
 
     //lifecycle methods
     private void Start()
@@ -29,14 +31,19 @@ public class EnemyController : MonoBehaviour
 
         rb = GetComponent<Rigidbody2D>();
         gun = GetComponent<Gun>();
+        animator = GetComponent<Animator>();
         health = GetComponent<Health>();
-        health.OnDeath += () => Destroy(gameObject);
+        health.OnHit += () => animator.SetTrigger("IsHit");
+        health.OnDeath += () => { animator.SetTrigger("IsDead"); IsDead = true; };
     }
     private void FixedUpdate()
     {
+        if(IsDead) 
+            return;
+
         if (RemainingBreakTime > 0)
         {
-            RemainingBreakTime -= Time.fixedDeltaTime;
+            UseBreak();
         }
         else
         {
@@ -55,7 +62,10 @@ public class EnemyController : MonoBehaviour
             DistanceTraveled += movementDistance;
             Vector2 newPosition = rb.position + Direction * movementDistance;
             rb.MovePosition(newPosition);
-            
+
+            animator.SetFloat("Look X", Direction.x);
+            animator.SetFloat("Look Y", Direction.y);
+            animator.SetFloat("Velocity", Direction.sqrMagnitude);
         }
         else
         {
@@ -76,7 +86,13 @@ public class EnemyController : MonoBehaviour
             PatrolsUntilBreak = Random.Range(1, 7 + 1);
             RemainingBreakTime = Random.Range(1, 4 + 1);
         }
-    }   
+    }
+    
+    private void UseBreak()
+    {
+        RemainingBreakTime -= Time.fixedDeltaTime;
+        animator.SetFloat("Velocity", 0);
+    }
 
     private void AttackPlayerOnSight()
     {
@@ -85,6 +101,7 @@ public class EnemyController : MonoBehaviour
             RaycastHit2D hit = Physics2D.Raycast(rb.position, direction, 4f, LayerMask.GetMask("Player"));
             if (hit.collider != null)
             {
+                animator.SetTrigger("IsShooting");
                 gun.Shoot(rb.position, direction);
                 break;
             }
