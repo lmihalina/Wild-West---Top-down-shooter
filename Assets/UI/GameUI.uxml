@@ -1,0 +1,11 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement name="PlayerHeatlh" style="flex-grow: initial; width: 10%; height: 10%;">
+        <ui:Label text="" name="PlayerHealthValue"/>
+    </ui:VisualElement>
+    <ui:VisualElement name="EnemyCount" style="flex-grow: initial; width: 10%; height: 10%;">
+        <ui:Label text="" name="EnemyCountValue"/>
+    </ui:VisualElement>
+    <ui:VisualElement name="EndScreen" style="flex-grow: 1;">
+        <ui:Label text="" name="EndScreenText"/>
+    </ui:VisualElement>
+</ui:UXML>

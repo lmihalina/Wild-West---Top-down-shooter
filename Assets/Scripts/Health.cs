@@ -12,7 +12,7 @@ public class Health : MonoBehaviour
     //components
 
     //lifecycle methods
-    private void Start()
+    private void Awake()
     {
         CurrentHealth = MaxHealth;
     }
@@ -28,7 +28,7 @@ public class Health : MonoBehaviour
 
     public void DecreaseHealth(int health)
     {
-        if(CurrentHealth - health > 0)
+        if (CurrentHealth - health > 0)
         {
             CurrentHealth -= health;
             OnHit?.Invoke();
@@ -36,6 +36,7 @@ public class Health : MonoBehaviour
         else
         {
             CurrentHealth = 0;
+            OnHit?.Invoke();
             OnDeath?.Invoke();
         }
     }
