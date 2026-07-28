@@ -12,6 +12,7 @@ public class GameController : MonoBehaviour
     void Start()
     {
         Player = FindFirstObjectByType<PlayerController>().GetComponent<Health>();
+        Player.MaxHealth = Difficulty.PlayerMaxHealth;
         Player.OnHit += UpdatePlayerHealth;
         Player.OnDeath += LoseGame;
 
@@ -20,6 +21,7 @@ public class GameController : MonoBehaviour
         foreach (EnemyController enemy in enemies)
         {
             Health enemyHealth = enemy.GetComponent<Health>();
+            enemyHealth.MaxHealth = Difficulty.EnemyMaxHealth;
             enemyHealth.OnDeath += UpdateEnemyCount;
         }
 

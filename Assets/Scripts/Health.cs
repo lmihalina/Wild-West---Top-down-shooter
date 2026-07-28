@@ -4,7 +4,18 @@ using UnityEngine;
 public class Health : MonoBehaviour
 {
     //properties
-    public int MaxHealth = 100;
+    private int _MaxHealth = 100;
+    public int MaxHealth
+    {
+        get => _MaxHealth;
+        set
+        {
+            if ( CurrentHealth == _MaxHealth)
+                CurrentHealth = value;
+            _MaxHealth = value;
+        }
+    }
+
     public int CurrentHealth { get; private set; }
     public event Action OnDeath;
     public event Action OnHit;

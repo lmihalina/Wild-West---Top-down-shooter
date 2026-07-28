@@ -1,0 +1,15 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement name="MainMenu" style="flex-grow: 1;">
+        <ui:Button text="Play&#10;" name="PlayButton"/>
+        <ui:Button text="Exit" name="ExitButton"/>
+    </ui:VisualElement>
+    <ui:VisualElement name="Difficulty" style="flex-grow: 1;">
+        <ui:Button text="Easy" name="EasyButton"/>
+        <ui:Button text="Medium" name="MediumButton"/>
+        <ui:Button text="Hard" name="HardButton"/>
+    </ui:VisualElement>
+    <ui:VisualElement name="Map" style="flex-grow: 1;">
+        <ui:Button text="Western Town&#10;" name="WesternTownButton"/>
+        <ui:Button text="Snowy Hideout" name="SnowyHideoutButton"/>
+    </ui:VisualElement>
+</ui:UXML>
