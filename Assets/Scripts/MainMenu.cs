@@ -5,6 +5,9 @@ using UnityEngine.UIElements;
 public class MainMenu : MonoBehaviour
 {
     //ui elements
+    private VisualElement MainMenuScreen;
+    private VisualElement DifficultyScreen;
+    private VisualElement MapScreen;
 
     private Button btnPlay;
     private Button btnExit;
@@ -27,47 +30,33 @@ public class MainMenu : MonoBehaviour
     //internal logic
     private void ShowHomeScreen()
     {
-        btnPlay.style.display = DisplayStyle.Flex;
-        btnExit.style.display = DisplayStyle.Flex;
-
-        btnEasy.style.display = DisplayStyle.None;
-        btnMedium.style.display = DisplayStyle.None;
-        btnHard.style.display = DisplayStyle.None;
-
-        btnWesternTown.style.display = DisplayStyle.None;
-        btnSnowyHideout.style.display = DisplayStyle.None;
+        MainMenuScreen.style.display = DisplayStyle.Flex;
+        DifficultyScreen.style.display = DisplayStyle.None;
+        MapScreen.style.display = DisplayStyle.None;
     }
 
     private void ShowDifficultyScreen()
     {
-        btnPlay.style.display = DisplayStyle.None;
-        btnExit.style.display = DisplayStyle.None;
-
-        btnEasy.style.display = DisplayStyle.Flex;
-        btnMedium.style.display = DisplayStyle.Flex;
-        btnHard.style.display = DisplayStyle.Flex;
-
-        btnWesternTown.style.display = DisplayStyle.None;
-        btnSnowyHideout.style.display = DisplayStyle.None;
+        MainMenuScreen.style.display = DisplayStyle.None;
+        DifficultyScreen.style.display = DisplayStyle.Flex;
+        MapScreen.style.display = DisplayStyle.None;
     }
 
     private void ShowMapScreen()
     {
-        btnPlay.style.display = DisplayStyle.None;
-        btnExit.style.display = DisplayStyle.None;
-
-        btnEasy.style.display = DisplayStyle.None;
-        btnMedium.style.display = DisplayStyle.None;
-        btnHard.style.display = DisplayStyle.None;
-
-        btnWesternTown.style.display = DisplayStyle.Flex;
-        btnSnowyHideout.style.display = DisplayStyle.Flex;
+        MainMenuScreen.style.display = DisplayStyle.None;
+        DifficultyScreen.style.display = DisplayStyle.None;
+        MapScreen.style.display = DisplayStyle.Flex;
     }
 
     //helpers
     private void RetrieveElemets()
     {
         UIDocument document = GetComponent<UIDocument>();
+
+        MainMenuScreen = document.rootVisualElement.Q<VisualElement>("MainMenu");
+        DifficultyScreen = document.rootVisualElement.Q<VisualElement>("Difficulty");
+        MapScreen = document.rootVisualElement.Q<VisualElement>("Map");
 
         btnPlay = document.rootVisualElement.Q<Button>("PlayButton");
         btnExit = document.rootVisualElement.Q<Button>("ExitButton");

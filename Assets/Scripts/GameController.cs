@@ -1,4 +1,3 @@
-using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -27,19 +26,23 @@ public class GameController : MonoBehaviour
 
         UpdatePlayerHealth();
         UpdateEnemyCount();
+        Hud.Instance.AssignButtonClickHandlers(
+            () => SceneManager.LoadScene(1), 
+            () => SceneManager.LoadScene(0)
+        ); 
     }
     
     //internal logic
     private void LoseGame()
     {
-        Hud.Instance.ShowEndgameScreen("You lose!");
-        Invoke(nameof(Restart), 3f);
+        Hud.Instance.ShowEndgameScreen("YOU LOSE!");
+        //Invoke(nameof(Restart), 3f);
     }
 
     private void WinGame()
     {
-        Hud.Instance.ShowEndgameScreen("You win!");
-        Invoke(nameof(Restart), 3f);
+        Hud.Instance.ShowEndgameScreen("YOU WIN!");
+        //Invoke(nameof(Restart), 3f);
     }
 
     private void UpdatePlayerHealth()

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -6,7 +7,10 @@ public class Hud : MonoBehaviour
     //ui elements
     private Label txtPlayerHealth;
     private Label txtEnemyCount;
-    private Label txtEndScreen;
+    private VisualElement EndScreen;
+    private Label EndScreenText;
+    private Button btnRetry;
+    private Button btnExitToMenu;
 
     //instance
     public static Hud Instance { get; private set; }
@@ -25,7 +29,10 @@ public class Hud : MonoBehaviour
         UIDocument uIDocument = GetComponent<UIDocument>();
         txtPlayerHealth = uIDocument.rootVisualElement.Q<Label>("PlayerHealthValue");
         txtEnemyCount = uIDocument.rootVisualElement.Q<Label>("EnemyCountValue");
-        txtEndScreen = uIDocument.rootVisualElement.Q<Label>("EndScreenText");
+        EndScreen = uIDocument.rootVisualElement.Q<VisualElement>("EndScreen");
+        EndScreenText = uIDocument.rootVisualElement.Q<Label>("EndScreenText");
+        btnRetry = uIDocument.rootVisualElement.Q<Button>("RetryButton");
+        btnExitToMenu = uIDocument.rootVisualElement.Q<Button>("ExitToMenuButton");
     }
 
     //API
@@ -41,6 +48,14 @@ public class Hud : MonoBehaviour
 
     public void ShowEndgameScreen(string gameResult)
     {
-        txtEndScreen.text = gameResult;
+        EndScreen.style.display = DisplayStyle.Flex;
+        EndScreen.style.opacity = 1;
+        EndScreenText.text = gameResult;
+    }
+
+    public void AssignButtonClickHandlers(Action onRetryClick, Action onExitToMenuClick)
+    {
+        btnRetry.clicked += onRetryClick;
+        btnExitToMenu.clicked += onExitToMenuClick;
     }
 }

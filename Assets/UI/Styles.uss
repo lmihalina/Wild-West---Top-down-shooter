@@ -1,0 +1,47 @@
+:root {
+}
+
+.button {
+    -unity-font-definition: url("project://database/Assets/Sprites/UI/Rye-Regular.ttf?fileID=12800000&guid=fb2f1cbb70783394b83935151f09e9ff&type=3#Rye-Regular");
+    font-size: 35px;
+    background-image: url("project://database/Assets/Sprites/UI/WoodenSignBoard.png?fileID=-5313822613202840995&guid=2afa9f5f6365baa4a87542b8d24452a3&type=3#WoodenSignBoard_0");
+    background-color: rgba(130, 130, 130, 0);
+    width: 400px;
+    height: 150px;
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+    padding-top: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+}
+
+.title {
+    -unity-font-definition: url("project://database/Assets/Sprites/UI/Rye-Regular.ttf?fileID=12800000&guid=fb2f1cbb70783394b83935151f09e9ff&type=3#Rye-Regular");
+    font-size: 250px;
+    color: rgb(255, 136, 0);
+}
+
+.menuContainer {
+    flex-grow: 0;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
+
+.button:hover {
+    filter: tint(rgb(118, 118, 118));
+}

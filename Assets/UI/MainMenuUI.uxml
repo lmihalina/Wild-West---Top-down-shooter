@@ -1,15 +1,19 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <ui:VisualElement name="MainMenu" style="flex-grow: 1;">
-        <ui:Button text="Play&#10;" name="PlayButton"/>
-        <ui:Button text="Exit" name="ExitButton"/>
+    <Style src="project://database/Assets/UI/Styles.uss?fileID=7433441132597879392&amp;guid=1cedb3ec60f753d4cb792f3ac22e8ff8&amp;type=3#Styles"/>
+    <ui:VisualElement name="MainMenu" class="menuContainer" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/Sprites/UI/WildWestBackground.png?fileID=2590375512904652877&amp;guid=2503666e5e750e34fbc21deb03487f3f&amp;type=3#WildWestBackground_0&quot;); -unity-background-scale-mode: stretch-to-fill;">
+        <ui:Label text="Wild West" name="Title" class="title" style="align-items: stretch;"/>
+        <ui:Button text="Play&#10;" name="PlayButton" class="button"/>
+        <ui:Button text="Exit" name="ExitButton" class="button"/>
     </ui:VisualElement>
-    <ui:VisualElement name="Difficulty" style="flex-grow: 1;">
-        <ui:Button text="Easy" name="EasyButton"/>
-        <ui:Button text="Medium" name="MediumButton"/>
-        <ui:Button text="Hard" name="HardButton"/>
+    <ui:VisualElement name="Difficulty" class="menuContainer" style="flex-grow: 1; display: none; background-image: url(&quot;project://database/Assets/Sprites/UI/WildWestBackground.png?fileID=2590375512904652877&amp;guid=2503666e5e750e34fbc21deb03487f3f&amp;type=3#WildWestBackground_0&quot;);">
+        <ui:Label text="Wild West" name="Title" class="title" style="align-items: stretch;"/>
+        <ui:Button text="Easy" name="EasyButton" class="button"/>
+        <ui:Button text="Medium" name="MediumButton" class="button"/>
+        <ui:Button text="Hard" name="HardButton" class="button"/>
     </ui:VisualElement>
-    <ui:VisualElement name="Map" style="flex-grow: 1;">
-        <ui:Button text="Western Town&#10;" name="WesternTownButton"/>
-        <ui:Button text="Snowy Hideout" name="SnowyHideoutButton"/>
+    <ui:VisualElement name="Map" class="menuContainer" style="flex-grow: 1; justify-content: flex-start; display: none; background-image: url(&quot;project://database/Assets/Sprites/UI/WildWestBackground.png?fileID=2590375512904652877&amp;guid=2503666e5e750e34fbc21deb03487f3f&amp;type=3#WildWestBackground_0&quot;);">
+        <ui:Label text="Wild West" name="Title" class="title" style="align-items: stretch;"/>
+        <ui:Button text="Western Town&#10;" name="WesternTownButton" class="button"/>
+        <ui:Button text="Snowy Hideout" name="SnowyHideoutButton" class="button"/>
     </ui:VisualElement>
 </ui:UXML>
