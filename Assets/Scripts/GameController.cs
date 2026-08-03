@@ -14,6 +14,7 @@ public class GameController : MonoBehaviour
         Player.MaxHealth = Difficulty.PlayerMaxHealth;
         Player.OnHit += UpdatePlayerHealth;
         Player.OnDeath += LoseGame;
+        Player.OnDeath += UpdatePlayerHealth;
 
         EnemyController[] enemies = FindObjectsByType<EnemyController>(FindObjectsSortMode.None);
         EnemyCount = enemies.Length + 1; //UpdateEnemyCount call will subtract it to correct number

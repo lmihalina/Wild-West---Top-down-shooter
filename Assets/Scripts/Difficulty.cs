@@ -16,6 +16,7 @@ public static class Difficulty
         PlayerMaxHealth = 100;
         EnemyMaxHealth = 100;
     }
+
     public static void SetHardDifficulty()
     {
         PlayerMaxHealth = 50;

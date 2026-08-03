@@ -4,6 +4,9 @@ using UnityEngine.UIElements;
 
 public class MainMenu : MonoBehaviour
 {
+    //audio
+    AudioSource audioSource;
+
     //ui elements
     private VisualElement MainMenuScreen;
     private VisualElement DifficultyScreen;
@@ -67,18 +70,22 @@ public class MainMenu : MonoBehaviour
 
         btnWesternTown = document.rootVisualElement.Q<Button>("WesternTownButton");
         btnSnowyHideout = document.rootVisualElement.Q<Button>("SnowyHideoutButton");
+
+        //audio
+        audioSource = GetComponent<AudioSource>();
     }
 
     private void AssignEventHandlers()
     {
-        btnPlay.clicked += ShowDifficultyScreen;
-        btnExit.clicked += () => Application.Quit();
+        btnPlay.clicked += () => { audioSource.Play(); ShowDifficultyScreen(); };
+        btnExit.clicked += () => { audioSource.Play(); Application.Quit(); };
 
-        btnEasy.clicked += () => { Difficulty.SetEasyDifficulty(); ShowMapScreen(); };
-        btnMedium.clicked += () => { Difficulty.SetMediumDifficulty(); ShowMapScreen();};
-        btnHard.clicked += () => { Difficulty.SetHardDifficulty(); ShowMapScreen(); };
+        btnEasy.clicked += () => { audioSource.Play(); Difficulty.SetEasyDifficulty(); ShowMapScreen(); };
+        btnMedium.clicked += () => { audioSource.Play(); Difficulty.SetMediumDifficulty(); ShowMapScreen(); };
+        btnHard.clicked += () => { audioSource.Play(); Difficulty.SetHardDifficulty(); ShowMapScreen(); };
 
-        btnWesternTown.clicked += () => SceneManager.LoadScene(1);
-        btnSnowyHideout.clicked += () => SceneManager.LoadScene(2);
+        btnWesternTown.clicked += () => { audioSource.Play(); SceneManager.LoadScene(1); };
+        btnSnowyHideout.clicked += () => { audioSource.Play(); SceneManager.LoadScene(1); };
     }
 }
+
