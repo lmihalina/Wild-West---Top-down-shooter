@@ -19,6 +19,7 @@ public class Health : MonoBehaviour
     public int CurrentHealth { get; private set; }
     public event Action OnDeath;
     public event Action OnHit;
+    public event Action OnHeal;
 
     //components
 
@@ -31,10 +32,16 @@ public class Health : MonoBehaviour
     //API
     public void IncreaseHealth(int health)
     {
-        if (CurrentHealth + health < MaxHealth)
+        if (CurrentHealth + health <= MaxHealth)
+        {
             CurrentHealth += health;
-        else
+            OnHeal?.Invoke();
+        }
+        else if (CurrentHealth + health > MaxHealth && CurrentHealth < MaxHealth)
+        {
             CurrentHealth = MaxHealth;
+            OnHeal?.Invoke();
+        }
     }
 
     public void DecreaseHealth(int health)

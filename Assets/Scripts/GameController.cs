@@ -13,6 +13,7 @@ public class GameController : MonoBehaviour
         Player = FindFirstObjectByType<PlayerController>().GetComponent<Health>();
         Player.MaxHealth = Difficulty.PlayerMaxHealth;
         Player.OnHit += UpdatePlayerHealth;
+        Player.OnHeal += UpdatePlayerHealth;
         Player.OnDeath += LoseGame;
         Player.OnDeath += UpdatePlayerHealth;
 
