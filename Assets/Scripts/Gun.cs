@@ -8,14 +8,14 @@ public class Gun : MonoBehaviour
     private float Cooldown = 0;
 
     //components
-    private BoxCollider2D shooterCollider;
+    private Collider2D[] shooterColliders;
     private CombatSounds combatSounds;
     private Animator animator;
 
     //lifecycle methods
     private void Start()
     {
-        shooterCollider = GetComponent<BoxCollider2D>();
+        shooterColliders = GetComponents<Collider2D>();
         animator = GetComponent<Animator>();
         combatSounds = GetComponent<CombatSounds>();
     }
@@ -33,14 +33,20 @@ public class Gun : MonoBehaviour
     {
         if(Cooldown == 0)
         {
+            Cooldown = ShootingCooldown;
             animator?.SetTrigger("IsShooting");
             combatSounds.PlayShootSound();
+
             GameObject bulletObject = Instantiate(BulletPrefab, position, Quaternion.identity);
-            Physics2D.IgnoreCollision(shooterCollider, bulletObject.GetComponent<CircleCollider2D>());
+            CircleCollider2D bulletCollider = bulletObject.GetComponent<CircleCollider2D>();
+            foreach (var col in shooterColliders)
+            {
+                Physics2D.IgnoreCollision(col, bulletObject.GetComponent<CircleCollider2D>());
+            }
 
             Bullet bullet = bulletObject.GetComponent<Bullet>();
             bullet.Launch(direction, 10);
-            Cooldown = ShootingCooldown;
+            
         }
     }
 }

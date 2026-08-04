@@ -18,7 +18,9 @@ public class PlayerController : MonoBehaviour
     private Gun gun;
     private Health health;
     private Animator animator;
-    private BoxCollider2D boxCollider;
+    private BoxCollider2D shootCollider;
+    private CircleCollider2D bodyCollider;
+    
 
     //lifecycle methods
     private void Start()
@@ -30,9 +32,10 @@ public class PlayerController : MonoBehaviour
         gun = GetComponent<Gun>();
         health = GetComponent<Health>();
         animator = GetComponent<Animator>();
-        boxCollider = GetComponent<BoxCollider2D>();
+        shootCollider = GetComponent<BoxCollider2D>();
+        bodyCollider = GetComponent<CircleCollider2D>();
 
-        health.OnDeath += () => { animator.SetTrigger("IsDead"); IsDead = true; boxCollider.enabled = false; };
+        health.OnDeath += () => { animator.SetTrigger("IsDead"); IsDead = true; shootCollider.enabled = bodyCollider.enabled = false; };
         health.OnHit += () => animator.SetTrigger("IsHit");
     }
 
