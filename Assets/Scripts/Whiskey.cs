@@ -31,7 +31,12 @@ public class Whiskey : MonoBehaviour
         AudioSource audioSource = collision.GetComponent<AudioSource>();
         Health health = collision.GetComponent<Health>();
 
-        health.OnHeal += () => { audioSource.PlayOneShot(drinkSound); Destroy(gameObject); };
-        health.IncreaseHealth(50);
+        //cant use onHeal because collding while HP is full assigns same event handler multiple times which creates issues(calling destroy on destroyed object)
+        if (health.CurrentHealth < health.MaxHealth)
+        {
+            audioSource.PlayOneShot(drinkSound);
+            health.IncreaseHealth(50);
+            Destroy(gameObject);
+        }
     }
 }

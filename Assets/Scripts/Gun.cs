@@ -41,7 +41,7 @@ public class Gun : MonoBehaviour
             CircleCollider2D bulletCollider = bulletObject.GetComponent<CircleCollider2D>();
             foreach (var col in shooterColliders)
             {
-                Physics2D.IgnoreCollision(col, bulletObject.GetComponent<CircleCollider2D>());
+                Physics2D.IgnoreCollision(col, bulletCollider);
             }
 
             Bullet bullet = bulletObject.GetComponent<Bullet>();

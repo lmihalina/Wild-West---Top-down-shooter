@@ -3,7 +3,7 @@ using UnityEngine;
 public class EnemyController : MonoBehaviour
 {
     //movement
-    public float Distance = 5f;
+    public float Distance = 6f;
     public float Velocity = 1f;
     public Vector2 Direction = Vector2.left;
     private float DistanceTraveled = 0;
@@ -15,6 +15,7 @@ public class EnemyController : MonoBehaviour
 
     //attack player on sight
     private readonly Vector2[] sightDirections = new Vector2[5];
+    public float DetectionRange = 5f;
 
     //components
     Rigidbody2D rb;
@@ -101,7 +102,7 @@ public class EnemyController : MonoBehaviour
     {
         foreach(Vector2 direction in sightDirections)
         {
-            RaycastHit2D hit = Physics2D.Raycast(rb.position, direction, 4f, LayerMask.GetMask("Player"));
+            RaycastHit2D hit = Physics2D.Raycast(rb.position, direction, DetectionRange, LayerMask.GetMask("Player"));
             if (hit.collider != null)
             {
                 gun.Shoot(rb.position, direction);

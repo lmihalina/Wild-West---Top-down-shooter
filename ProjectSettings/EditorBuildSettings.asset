@@ -11,9 +11,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/WesternTown.unity
     guid: bb182d2f62b79524ca3ea9cd4ef9861e
-  - enabled: 1
-    path: Assets/Scenes/SnowyHideout.unity
-    guid: 556eeb09f0e62904abde491de1aa5c75
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

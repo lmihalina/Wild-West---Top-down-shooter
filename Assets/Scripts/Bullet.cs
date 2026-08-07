@@ -2,6 +2,9 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
+    //properties
+    private Vector2 startingPosition;
+
     //components
     private Rigidbody2D rb;
 
@@ -9,6 +12,13 @@ public class Bullet : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        startingPosition = rb.position;
+    }
+
+    private void Update()
+    {
+        if ((startingPosition - rb.position).sqrMagnitude > 100)
+            Destroy(gameObject);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
