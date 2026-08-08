@@ -1,0 +1,1413 @@
+﻿Ovaj je razgovor generiran s Duck.ai (https://duck.ai) pomoću Anthropic modela Claude Haiku 4.5. AI čavrljanja mogu prikazivati netočne ili uvredljive informacije (pogledajte https://duckduckgo.com/duckai/privacy-terms za više informacija).
+
+====================
+
+Korisnički upit 1 od 7 - 20. 07. 2026. 13:47:46:
+i am making a 2d top down shooter game in unity. i plan to have multiple levels organized each in a new scene, option to choose game difficulty which will control how much hp player and enemies have and number of enemies in a level and i want to have main scene which will allow player to choose difficulty before playing. there will also be game manager script. how can i make this feature of different difficulties considering on choosing some difficulty certain variables in game manager will get modified? 
+
+Claude Haiku 4.5:
+# Implementing Game Difficulty in Your Unity Top-Down Shooter
+
+**Create a centralized difficulty system using a ScriptableObject to define difficulty settings, then use a GameManager singleton to access and apply these settings across scenes.** This approach keeps your difficulty data organized and makes it easy to modify without changing code.
+
+---
+
+## Architecture Overview
+
+Here's the recommended structure:
+
+| Component | Purpose | Example |
+|-----------|---------|---------|
+| **DifficultySettings (ScriptableObject)** | Defines all difficulty parameters (HP, enemy count, etc.) | Easy: 100 HP, 3 enemies; Hard: 50 HP, 8 enemies |
+| **GameManager (Singleton)** | Persists across scenes, holds current difficulty reference, applies settings | Loads DifficultySettings, spawns enemies based on difficulty |
+| **MainMenu Scene** | UI for difficulty selection | Buttons for Easy/Medium/Hard that set GameManager's current difficulty |
+| **Level Scenes** | Actual gameplay | Enemy spawners and player read from GameManager |
+
+---
+
+## Step 1: Create a DifficultySettings ScriptableObject
+
+**Create a new C# script called `DifficultySettings.cs`:**
+
+```csharp
+using UnityEngine;
+
+[CreateAssetMenu(fileName = "New Difficulty", menuName = "Game/Difficulty Settings")]
+public class DifficultySettings : ScriptableObject
+{
+    public string difficultyName; // "Easy", "Medium", "Hard"
+    
+    [Header("Player Settings")]
+    public int playerMaxHP = 100;
+    public float playerDamage = 1f;
+    public float playerFireRate = 0.5f;
+    
+    [Header("Enemy Settings")]
+    public int enemyCount = 5;
+    public int enemyMaxHP = 30;
+    public float enemyDamage = 0.5f;
+    public float enemyFireRate = 1f;
+    public float enemySpeed = 3f;
+}
+```
+
+In the Unity Editor, **right-click in your Assets folder → Create → Game → Difficulty Settings** and create three instances: **Easy**, **Medium**, and **Hard**. Fill in the values for each.
+
+---
+
+## Step 2: Create a GameManager Singleton
+
+**Create a new C# script called `GameManager.cs`:**
+
+```csharp
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class GameManager : MonoBehaviour
+{
+    public static GameManager Instance { get; private set; }
+    
+    [SerializeField] private DifficultySettings currentDifficulty;
+    
+    private void Awake()
+    {
+        // Implement singleton pattern
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        
+        Instance = this;
+        DontDestroyOnLoad(gameObject); // Persist across scene loads
+    }
+    
+    /// <summary>
+    /// Set the difficulty before loading a level
+    /// </summary>
+    public void SetDifficulty(DifficultySettings difficulty)
+    {
+        currentDifficulty = difficulty;
+        Debug.Log($"Difficulty set to: {difficulty.difficultyName}");
+    }
+    
+    /// <summary>
+    /// Get the current difficulty settings
+    /// </summary>
+    public DifficultySettings GetCurrentDifficulty()
+    {
+        if (currentDifficulty == null)
+        {
+            Debug.LogWarning("No difficulty set! Using default.");
+            return Resources.Load<DifficultySettings>("Difficulties/Easy"); // Fallback
+        }
+        return currentDifficulty;
+    }
+    
+    /// <summary>
+    /// Load a scene by name
+    /// </summary>
+    public void LoadLevel(string sceneName)
+    {
+        SceneManager.LoadScene(sceneName);
+    }
+}
+```
+
+**Add the GameManager to your Main Menu scene:** Create an empty GameObject called "GameManager", attach the `GameManager.cs` script, and leave it empty (the instance will be created at runtime).
+
+---
+
+## Step 3: Create a Difficulty Selector UI
+
+**Create a new C# script called `DifficultySelector.cs`:**
+
+```csharp
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class DifficultySelector : MonoBehaviour
+{
+    [SerializeField] private DifficultySettings easyDifficulty;
+    [SerializeField] private DifficultySettings mediumDifficulty;
+    [SerializeField] private DifficultySettings hardDifficulty;
+    
+    [SerializeField] private string levelSceneName = "Level1"; // Change to your level scene name
+    
+    public void SelectEasy()
+    {
+        GameManager.Instance.SetDifficulty(easyDifficulty);
+        GameManager.Instance.LoadLevel(levelSceneName);
+    }
+    
+    public void SelectMedium()
+    {
+        GameManager.Instance.SetDifficulty(mediumDifficulty);
+        GameManager.Instance.LoadLevel(levelSceneName);
+    }
+    
+    public void SelectHard()
+    {
+        GameManager.Instance.SetDifficulty(hardDifficulty);
+        GameManager.Instance.LoadLevel(levelSceneName);
+    }
+}
+```
+
+**In your Main Menu scene:**
+1. Create three UI buttons labeled "Easy", "Medium", "Hard"
+2. Create an empty GameObject and attach `DifficultySelector.cs` to it
+3. In the Inspector, assign your difficulty ScriptableObjects to the fields
+4. Click each button and in the Inspector, assign the corresponding method from `DifficultySelector` to the button's `OnClick()` event
+
+---
+
+## Step 4: Apply Settings in Your Player Script
+
+**Modify your Player script to use GameManager settings:**
+
+```csharp
+using UnityEngine;
+
+public class Player : MonoBehaviour
+{
+    private int currentHP;
+    private DifficultySettings difficulty;
+    
+    private void Start()
+    {
+        difficulty = GameManager.Instance.GetCurrentDifficulty();
+        currentHP = difficulty.playerMaxHP;
+        Debug.Log($"Player spawned with {currentHP} HP");
+    }
+    
+    public void TakeDamage(int damage)
+    {
+        currentHP -= damage;
+        if (currentHP <= 0)
+        {
+            Die();
+        }
+    }
+    
+    private void Die()
+    {
+        Destroy(gameObject);
+    }
+}
+```
+
+---
+
+## Step 5: Apply Settings in Your Enemy Spawner
+
+**Modify your enemy spawner to use GameManager settings:**
+
+```csharp
+using UnityEngine;
+
+public class EnemySpawner : MonoBehaviour
+{
+    [SerializeField] private GameObject enemyPrefab;
+    [SerializeField] private Transform[] spawnPoints;
+    
+    private DifficultySettings difficulty;
+    
+    private void Start()
+    {
+        difficulty = GameManager.Instance.GetCurrentDifficulty();
+        SpawnEnemies();
+    }
+    
+    private void SpawnEnemies()
+    {
+        for (int i = 0; i < difficulty.enemyCount; i++)
+        {
+            Transform spawnPoint = spawnPoints[i % spawnPoints.Length];
+            GameObject enemy = Instantiate(enemyPrefab, spawnPoint.position, Quaternion.identity);
+            
+            Enemy enemyScript = enemy.GetComponent<Enemy>();
+            if (enemyScript != null)
+            {
+                enemyScript.Initialize(difficulty);
+            }
+        }
+    }
+}
+```
+
+---
+
+## Step 6: Apply Settings in Your Enemy Script
+
+**Modify your Enemy script to accept difficulty settings:**
+
+```csharp
+using UnityEngine;
+
+public class Enemy : MonoBehaviour
+{
+    private int currentHP;
+    private float damage;
+    private float fireRate;
+    private float speed;
+    
+    public void Initialize(DifficultySettings difficulty)
+    {
+        currentHP = difficulty.enemyMaxHP;
+        damage = difficulty.enemyDamage;
+        fireRate = difficulty.enemyFireRate;
+        speed = difficulty.enemySpeed;
+    }
+    
+    public void TakeDamage(int damage)
+    {
+        currentHP -= damage;
+        if (currentHP <= 0)
+        {
+            Die();
+        }
+    }
+    
+    private void Die()
+    {
+        Destroy(gameObject);
+    }
+}
+```
+
+---
+
+## Workflow Summary
+
+1. **Player selects difficulty in Main Menu** → `DifficultySelector` calls `GameManager.SetDifficulty()`
+2. **Level scene loads** → `Player` and `EnemySpawner` call `GameManager.GetCurrentDifficulty()`
+3. **Settings are applied** → Player HP, enemy count, and enemy stats reflect the chosen difficulty
+4. **Multiple levels** → Each level scene can have its own `EnemySpawner`, and they'll all read from the same `GameManager` instance
+
+---
+
+## Tips for Scaling
+
+- **Add more difficulties:** Create additional DifficultySettings ScriptableObjects and reference them in `DifficultySelector`
+- **Per-level difficulty tweaks:** If you want different difficulty curves per level, create a `LevelManager` that overrides specific values
+- **Difficulty presets:** Store difficulty references in an array so you can easily add/remove difficulties without modifying code
+
+This system is clean, reusable, and easy to balance without touching code!
+
+--------------------
+
+Korisnički upit 2 od 7 - 20. 07. 2026. 14:01:13:
+good, but what if i had in mind two manager scripts, one called mainmanager which is responsible for storing the difficulty settings selected by the user and loading correct level depending on his choice, and gamemanager which is reposnsible for main game loop, and spawning enemies, setting their health and player health and he sets those settings from values that user selected in main menu screen that have originaly modified mainmanager script and that script needs to somehow communicate or make those settings avaliable to gamemanager script?
+
+Claude Haiku 4.5:
+# Two-Manager Architecture with Communication
+
+**Use a singleton pattern for both managers where MainManager persists across scenes and GameManager reads the difficulty settings from MainManager when the level loads.** MainManager acts as a data holder, while GameManager consumes that data to configure the game.
+
+---
+
+## Architecture Overview
+
+| Manager | Purpose | Lifespan |
+|---------|---------|----------|
+| **MainManager** | Stores selected difficulty, persists across scenes, loads appropriate level | Persists from Main Menu through all levels |
+| **GameManager** | Reads difficulty from MainManager, spawns enemies, sets HP values, manages gameplay loop | Created fresh in each level scene |
+
+---
+
+## Step 1: Create MainManager Script
+
+**Create `MainManager.cs` (placed in Main Menu scene and persists across scenes):**
+
+```csharp
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class MainManager : MonoBehaviour
+{
+    public static MainManager Instance { get; private set; }
+    
+    [SerializeField] private DifficultySettings selectedDifficulty;
+    
+    private void Awake()
+    {
+        // Singleton pattern
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        
+        Instance = this;
+        DontDestroyOnLoad(gameObject); // Persist across all scenes
+    }
+    
+    /// <summary>
+    /// Called by difficulty selector buttons in Main Menu
+    /// </summary>
+    public void SelectDifficulty(DifficultySettings difficulty)
+    {
+        selectedDifficulty = difficulty;
+        Debug.Log($"MainManager: Difficulty selected - {difficulty.difficultyName}");
+    }
+    
+    /// <summary>
+    /// GameManager will call this to get the selected difficulty
+    /// </summary>
+    public DifficultySettings GetSelectedDifficulty()
+    {
+        if (selectedDifficulty == null)
+        {
+            Debug.LogWarning("MainManager: No difficulty selected! Returning default.");
+            return Resources.Load<DifficultySettings>("Difficulties/Easy"); // Fallback
+        }
+        return selectedDifficulty;
+    }
+    
+    /// <summary>
+    /// Load a level scene
+    /// </summary>
+    public void LoadLevel(string levelSceneName)
+    {
+        Debug.Log($"MainManager: Loading level - {levelSceneName}");
+        SceneManager.LoadScene(levelSceneName);
+    }
+    
+    /// <summary>
+    /// Return to main menu (optional, for later use)
+    /// </summary>
+    public void ReturnToMainMenu()
+    {
+        Time.timeScale = 1f; // Unpause if paused
+        SceneManager.LoadScene("MainMenu"); // Change to your Main Menu scene name
+    }
+}
+```
+
+---
+
+## Step 2: Create GameManager Script
+
+**Create `GameManager.cs` (placed in each level scene as a fresh instance):**
+
+```csharp
+using UnityEngine;
+
+public class GameManager : MonoBehaviour
+{
+    public static GameManager Instance { get; private set; }
+    
+    private DifficultySettings currentDifficulty;
+    
+    [SerializeField] private GameObject enemyPrefab;
+    [SerializeField] private Transform[] enemySpawnPoints;
+    [SerializeField] private Player playerScript;
+    
+    private int enemiesAlive;
+    
+    private void Awake()
+    {
+        // Singleton for this level only (destroyed when scene changes)
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        
+        Instance = this;
+    }
+    
+    private void Start()
+    {
+        // Get difficulty settings from MainManager
+        currentDifficulty = MainManager.Instance.GetSelectedDifficulty();
+        Debug.Log($"GameManager: Received difficulty - {currentDifficulty.difficultyName}");
+        
+        // Initialize player with difficulty settings
+        InitializePlayer();
+        
+        // Spawn enemies based on difficulty
+        SpawnEnemies();
+    }
+    
+    /// <summary>
+    /// Initialize player with difficulty settings
+    /// </summary>
+    private void InitializePlayer()
+    {
+        if (playerScript != null)
+        {
+            playerScript.Initialize(currentDifficulty);
+            Debug.Log($"GameManager: Player initialized with {currentDifficulty.playerMaxHP} HP");
+        }
+        else
+        {
+            Debug.LogError("GameManager: Player script not assigned!");
+        }
+    }
+    
+    /// <summary>
+    /// Spawn enemies based on difficulty settings
+    /// </summary>
+    private void SpawnEnemies()
+    {
+        enemiesAlive = currentDifficulty.enemyCount;
+        
+        for (int i = 0; i < currentDifficulty.enemyCount; i++)
+        {
+            // Cycle through spawn points if there are fewer spawn points than enemies
+            Transform spawnPoint = enemySpawnPoints[i % enemySpawnPoints.Length];
+            
+            GameObject enemyObject = Instantiate(enemyPrefab, spawnPoint.position, Quaternion.identity);
+            Enemy enemyScript = enemyObject.GetComponent<Enemy>();
+            
+            if (enemyScript != null)
+            {
+                enemyScript.Initialize(currentDifficulty, this);
+                Debug.Log($"GameManager: Enemy {i + 1} spawned with {currentDifficulty.enemyMaxHP} HP");
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Called by enemies when they die
+    /// </summary>
+    public void EnemyDefeated()
+    {
+        enemiesAlive--;
+        Debug.Log($"GameManager: Enemy defeated. Enemies remaining: {enemiesAlive}");
+        
+        if (enemiesAlive <= 0)
+        {
+            LevelComplete();
+        }
+    }
+    
+    /// <summary>
+    /// Called when all enemies are defeated
+    /// </summary>
+    private void LevelComplete()
+    {
+        Debug.Log("GameManager: Level Complete!");
+        // Add your level complete logic here (UI, next level, etc.)
+    }
+    
+    /// <summary>
+    /// Getter for current difficulty (if other scripts need it)
+    /// </summary>
+    public DifficultySettings GetDifficulty()
+    {
+        return currentDifficulty;
+    }
+}
+```
+
+---
+
+## Step 3: Update Player Script
+
+**Modify your `Player.cs` to use the difficulty settings:**
+
+```csharp
+using UnityEngine;
+
+public class Player : MonoBehaviour
+{
+    private int maxHP;
+    private int currentHP;
+    private float damage;
+    private float fireRate;
+    
+    /// <summary>
+    /// Called by GameManager to initialize with difficulty settings
+    /// </summary>
+    public void Initialize(DifficultySettings difficulty)
+    {
+        maxHP = difficulty.playerMaxHP;
+        currentHP = maxHP;
+        damage = difficulty.playerDamage;
+        fireRate = difficulty.playerFireRate;
+        
+        Debug.Log($"Player initialized: {currentHP} HP, {damage} damage, {fireRate} fire rate");
+    }
+    
+    public void TakeDamage(int damageAmount)
+    {
+        currentHP -= damageAmount;
+        Debug.Log($"Player took damage. Current HP: {currentHP}");
+        
+        if (currentHP <= 0)
+        {
+            Die();
+        }
+    }
+    
+    public int GetCurrentHP()
+    {
+        return currentHP;
+    }
+    
+    public int GetMaxHP()
+    {
+        return maxHP;
+    }
+    
+    private void Die()
+    {
+        Debug.Log("Player died!");
+        Destroy(gameObject);
+        // Add game over logic here
+    }
+}
+```
+
+---
+
+## Step 4: Update Enemy Script
+
+**Modify your `Enemy.cs` to use difficulty settings:**
+
+```csharp
+using UnityEngine;
+
+public class Enemy : MonoBehaviour
+{
+    private int maxHP;
+    private int currentHP;
+    private float damage;
+    private float fireRate;
+    private float speed;
+    
+    private GameManager gameManager;
+    
+    /// <summary>
+    /// Called by GameManager to initialize with difficulty settings
+    /// </summary>
+    public void Initialize(DifficultySettings difficulty, GameManager manager)
+    {
+        maxHP = difficulty.enemyMaxHP;
+        currentHP = maxHP;
+        damage = difficulty.enemyDamage;
+        fireRate = difficulty.enemyFireRate;
+        speed = difficulty.enemySpeed;
+        gameManager = manager;
+        
+        Debug.Log($"Enemy initialized: {currentHP} HP, {damage} damage, {speed} speed");
+    }
+    
+    public void TakeDamage(int damageAmount)
+    {
+        currentHP -= damageAmount;
+        Debug.Log($"Enemy took damage. Current HP: {currentHP}");
+        
+        if (currentHP <= 0)
+        {
+            Die();
+        }
+    }
+    
+    public int GetCurrentHP()
+    {
+        return currentHP;
+    }
+    
+    public int GetMaxHP()
+    {
+        return maxHP;
+    }
+    
+    private void Die()
+    {
+        Debug.Log("Enemy defeated!");
+        
+        // Notify GameManager that this enemy is defeated
+        if (gameManager != null)
+        {
+            gameManager.EnemyDefeated();
+        }
+        
+        Destroy(gameObject);
+    }
+}
+```
+
+---
+
+## Step 5: Update Difficulty Selector
+
+**Modify your `DifficultySelector.cs` to use MainManager:**
+
+```csharp
+using UnityEngine;
+
+public class DifficultySelector : MonoBehaviour
+{
+    [SerializeField] private DifficultySettings easyDifficulty;
+    [SerializeField] private DifficultySettings mediumDifficulty;
+    [SerializeField] private DifficultySettings hardDifficulty;
+    
+    [SerializeField] private string levelSceneName = "Level1";
+    
+    public void SelectEasy()
+    {
+        MainManager.Instance.SelectDifficulty(easyDifficulty);
+        MainManager.Instance.LoadLevel(levelSceneName);
+    }
+    
+    public void SelectMedium()
+    {
+        MainManager.Instance.SelectDifficulty(mediumDifficulty);
+        MainManager.Instance.LoadLevel(levelSceneName);
+    }
+    
+    public void SelectHard()
+    {
+        MainManager.Instance.SelectDifficulty(hardDifficulty);
+        MainManager.Instance.LoadLevel(levelSceneName);
+    }
+}
+```
+
+---
+
+## Scene Setup
+
+### Main Menu Scene
+1. Create an empty GameObject called "MainManager"
+2. Attach the `MainManager.cs` script to it
+3. Create UI buttons for difficulty selection
+4. Create an empty GameObject, attach `DifficultySelector.cs` to it
+5. Assign difficulty ScriptableObjects in the Inspector
+6. Wire buttons to the SelectEasy/SelectMedium/SelectHard methods
+
+### Level Scenes (e.g., Level1, Level2, etc.)
+1. Create an empty GameObject called "GameManager"
+2. Attach the `GameManager.cs` script to it
+3. Assign the enemy prefab, spawn points, and player reference in the Inspector
+4. Place your Player in the scene (or have GameManager instantiate it)
+
+---
+
+## Communication Flow
+
+```
+User clicks "Easy" button
+    ↓
+DifficultySelector.SelectEasy() called
+    ↓
+MainManager.SelectDifficulty(easyDifficulty) → stores difficulty
+    ↓
+MainManager.LoadLevel("Level1") → loads level scene
+    ↓
+GameManager.Start() in Level1
+    ↓
+GameManager calls MainManager.GetSelectedDifficulty() → retrieves stored difficulty
+    ↓
+GameManager initializes Player and Enemy objects with those settings
+```
+
+---
+
+## Key Benefits of This Approach
+
+- **Separation of concerns:** MainManager handles menu/navigation, GameManager handles gameplay
+- **Data persistence:** MainManager stays alive, so difficulty is available to any level
+- **Clean communication:** GameManager explicitly asks MainManager for data via `GetSelectedDifficulty()`
+- **Scalability:** Easy to add multiple levels—just create new level scenes with GameManager instances
+- **Testability:** You can swap difficulty values without changing either manager's logic
+
+--------------------
+
+Korisnički upit 3 od 7 - 20. 07. 2026. 14:12:04:
+ok , i have some aditional questions:  since it never gets destroyed what happens if i reload the main menu scene for example user quits to main menu?
+
+Claude Haiku 4.5:
+# MainManager Persistence and Main Menu Reloading
+
+**When you reload the Main Menu scene, MainManager won't be destroyed because of `DontDestroyOnLoad()`, so you'll have the old instance still active in the scene.** This creates a problem: you'll have duplicate managers or unexpected behavior.
+
+---
+
+## The Problem
+
+When the user quits to Main Menu:
+
+```
+User in Level1 → Quits to Main Menu
+    ↓
+SceneManager.LoadScene("MainMenu")
+    ↓
+MainManager already exists (DontDestroyOnLoad prevented destruction)
+    ↓
+New Main Menu scene loads
+    ↓
+Now you have OLD MainManager in the scene + NEW Main Menu UI
+    ↓
+Potentially confusing state or duplicate managers
+```
+
+---
+
+## Solution: Reload MainManager When Returning to Main Menu
+
+**Modify `MainManager.cs` to detect when the Main Menu scene loads and reset itself:**
+
+```csharp
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class MainManager : MonoBehaviour
+{
+    public static MainManager Instance { get; private set; }
+    
+    [SerializeField] private DifficultySettings selectedDifficulty;
+    [SerializeField] private string mainMenuSceneName = "MainMenu"; // Set in Inspector
+    
+    private void Awake()
+    {
+        // Singleton pattern
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
+    
+    private void OnEnable()
+    {
+        // Subscribe to scene load events
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+    
+    private void OnDisable()
+    {
+        // Unsubscribe to avoid memory leaks
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+    
+    /// <summary>
+    /// Called whenever a scene loads
+    /// </summary>
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // If Main Menu scene is loaded, reset the difficulty
+        if (scene.name == mainMenuSceneName)
+        {
+            ResetDifficulty();
+            Debug.Log("MainManager: Returned to Main Menu. Difficulty reset.");
+        }
+    }
+    
+    /// <summary>
+    /// Reset difficulty when returning to main menu
+    /// </summary>
+    private void ResetDifficulty()
+    {
+        selectedDifficulty = null;
+    }
+    
+    public void SelectDifficulty(DifficultySettings difficulty)
+    {
+        selectedDifficulty = difficulty;
+        Debug.Log($"MainManager: Difficulty selected - {difficulty.difficultyName}");
+    }
+    
+    public DifficultySettings GetSelectedDifficulty()
+    {
+        if (selectedDifficulty == null)
+        {
+            Debug.LogWarning("MainManager: No difficulty selected! Returning default.");
+            return Resources.Load<DifficultySettings>("Difficulties/Easy");
+        }
+        return selectedDifficulty;
+    }
+    
+    public void LoadLevel(string levelSceneName)
+    {
+        Debug.Log($"MainManager: Loading level - {levelSceneName}");
+        SceneManager.LoadScene(levelSceneName);
+    }
+    
+    public void ReturnToMainMenu()
+    {
+        Time.timeScale = 1f; // Unpause if paused
+        SceneManager.LoadScene(mainMenuSceneName);
+    }
+}
+```
+
+---
+
+## Alternative: Destroy MainManager When Main Menu Loads
+
+**If you prefer a cleaner approach, destroy the MainManager when returning to the Main Menu:**
+
+```csharp
+private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+{
+    // If Main Menu scene is loaded, destroy this manager
+    // A fresh one will be created if needed
+    if (scene.name == mainMenuSceneName)
+    {
+        Destroy(gameObject);
+        Instance = null;
+        Debug.Log("MainManager: Destroyed when returning to Main Menu.");
+    }
+}
+```
+
+However, this approach has a drawback: **MainManager won't exist when the Main Menu scene first loads**, so you need to ensure it's created in the Main Menu scene, not in a level scene.
+
+---
+
+## Recommended Setup
+
+**I recommend the first approach (reset difficulty instead of destroying)** because:
+
+1. **MainManager is always available** if you accidentally call it from anywhere
+2. **No duplicate instantiation logic** needed
+3. **Cleaner state management** — just reset what needs resetting
+4. **Single source of truth** — the original MainManager instance persists
+
+---
+
+## Complete Flow with Reset
+
+```
+User clicks "Easy" → SelectDifficulty(easy) → LoadLevel("Level1")
+    ↓
+In Level1, GameManager reads difficulty from MainManager
+    ↓
+User plays, then clicks "Quit to Main Menu"
+    ↓
+ReturnToMainMenu() called
+    ↓
+MainManager detects Main Menu scene loaded
+    ↓
+OnSceneLoaded() fires → ResetDifficulty() clears the selection
+    ↓
+Main Menu UI appears fresh, ready for new difficulty selection
+    ↓
+User can select difficulty again
+```
+
+---
+
+## Important: Set the Scene Name in Inspector
+
+**In the MainManager Inspector, set the `mainMenuSceneName` field to match your actual Main Menu scene name** (case-sensitive). If your scene is called "MainMenu", type exactly that.
+
+This approach keeps your managers clean and prevents any ghost instances from causing problems!
+
+--------------------
+
+Korisnički upit 4 od 7 - 20. 07. 2026. 14:21:58:
+   private void Awake()
+    {
+        // Singleton pattern
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
+    doesnt that part make sure of that? if i understand correctly when i reload mainmanager then i will be having two insatnces of mainmanager and in here you check if the insatnce exists and is equal to this. the new instance passes checks in this condition so new instance of gameobject is destroyed and the old game manager then persists and then it all works correctly again right?
+
+Claude Haiku 4.5:
+# Understanding the Singleton Pattern in Your Code
+
+**Yes, exactly right!** You've got it. The Awake() check already prevents duplicate instances, so you actually don't need the `OnSceneLoaded()` reset at all. Let me break down what happens:
+
+---
+
+## How the Singleton Check Works
+
+```
+Scenario: User is in Level1, quits to Main Menu
+
+Step 1: Main Menu scene loads
+    ↓
+Step 2: Awake() is called on the NEW MainManager instance
+    ↓
+Step 3: Check condition: if (Instance != null && Instance != this)
+    - Instance is NOT null (old instance from Level1 still exists)
+    - Instance is NOT equal to this (this is the new instance)
+    - Condition is TRUE
+    ↓
+Step 4: Destroy(gameObject) — NEW instance is destroyed
+    ↓
+Step 5: return — exits Awake()
+    ↓
+Result: OLD MainManager persists, new one is destroyed
+    - Only ONE instance exists at all times
+    - No duplicates
+```
+
+**Your understanding is correct.** The singleton pattern handles this automatically.
+
+---
+
+## So Do You Need the OnSceneLoaded Reset?
+
+**Not necessarily.** It depends on your use case:
+
+### Option 1: Keep the Singleton As-Is (No Reset)
+If you want the previously selected difficulty to persist when returning to the Main Menu:
+
+```csharp
+// User selects "Hard" and plays Level1
+// User quits to Main Menu
+// MainManager still remembers "Hard" was selected
+// (You could show it in UI or auto-select it)
+```
+
+In this case, **remove the OnSceneLoaded() method entirely** — the singleton alone is sufficient.
+
+### Option 2: Reset Difficulty on Main Menu Return
+If you want to **force the user to select difficulty again** when returning to Main Menu:
+
+```csharp
+private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+{
+    if (scene.name == mainMenuSceneName)
+    {
+        selectedDifficulty = null; // Clear selection
+        Debug.Log("MainManager: Difficulty reset.");
+    }
+}
+```
+
+This is purely a **game design choice**, not a technical requirement. The singleton already prevents duplicates.
+
+---
+
+## Simplified Version (Recommended)
+
+**You can simplify MainManager to just use the singleton without the OnSceneLoaded logic:**
+
+```csharp
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class MainManager : MonoBehaviour
+{
+    public static MainManager Instance { get; private set; }
+    
+    [SerializeField] private DifficultySettings selectedDifficulty;
+    
+    private void Awake()
+    {
+        // Singleton pattern - prevents duplicates automatically
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
+    
+    public void SelectDifficulty(DifficultySettings difficulty)
+    {
+        selectedDifficulty = difficulty;
+        Debug.Log($"MainManager: Difficulty selected - {difficulty.difficultyName}");
+    }
+    
+    public DifficultySettings GetSelectedDifficulty()
+    {
+        if (selectedDifficulty == null)
+        {
+            Debug.LogWarning("MainManager: No difficulty selected! Returning default.");
+            return Resources.Load<DifficultySettings>("Difficulties/Easy");
+        }
+        return selectedDifficulty;
+    }
+    
+    public void LoadLevel(string levelSceneName)
+    {
+        SceneManager.LoadScene(levelSceneName);
+    }
+    
+    public void ReturnToMainMenu()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("MainMenu");
+    }
+}
+```
+
+That's it. **The Awake() check is all you need.** Your original understanding was spot-on.
+
+--------------------
+
+Korisnički upit 5 od 7 - 20. 07. 2026. 14:24:19:
+another question,do i need return in awake method or does it upon destroying game object the script also gets destroyed so the new instance wont override the old one? also since i already set for old instance to not get destroyed on load then i could theoretically make check to only do it the first time right? 
+
+Claude Haiku 4.5:
+# Return Statement and First-Time Initialization
+
+**Good questions! Let's break both down:**
+
+---
+
+## Do You Need the `return` Statement?
+
+**Yes, you should keep the `return`.** Here's why:
+
+```csharp
+if (Instance != null && Instance != this)
+{
+    Destroy(gameObject);
+    return;  // ← Important!
+}
+```
+
+**Without `return`:** After `Destroy(gameObject)` is called, the rest of Awake() continues executing on the destroyed object:
+
+```csharp
+if (Instance != null && Instance != this)
+{
+    Destroy(gameObject);
+    // WITHOUT return, code continues here...
+}
+
+Instance = this;  // ← This still runs on the destroyed object!
+DontDestroyOnLoad(gameObject); // ← This still runs too!
+```
+
+This means you're setting `Instance = this` (the new, destroyed instance) **after** destroying it, which overwrites the old instance reference. **This breaks the singleton.**
+
+**With `return`:** The method exits immediately, so the problematic code doesn't run.
+
+```csharp
+if (Instance != null && Instance != this)
+{
+    Destroy(gameObject);
+    return;  // ← Exits Awake() here, rest doesn't execute
+}
+
+Instance = this;  // ← Only runs for the FIRST instance
+DontDestroyOnLoad(gameObject); // ← Only runs for the FIRST instance
+```
+
+---
+
+## Only Set DontDestroyOnLoad the First Time
+
+**Yes, you can optimize this!** Since you only need `DontDestroyOnLoad()` once (on the original instance), you could move it outside the conditional:
+
+```csharp
+private void Awake()
+{
+    if (Instance != null && Instance != this)
+    {
+        Destroy(gameObject);
+        return;
+    }
+    
+    Instance = this;
+    DontDestroyOnLoad(gameObject);
+}
+```
+
+This is exactly what you already have. **The `DontDestroyOnLoad()` only runs on the first instance** because:
+- **First instance:** `Instance == null`, so it skips the if block, runs `DontDestroyOnLoad()`
+- **Duplicate instances:** `Instance != null`, so they're destroyed before reaching `DontDestroyOnLoad()`
+
+So your current code is already optimized! You don't need any changes.
+
+---
+
+## Alternative: Make It Even More Explicit
+
+If you want to be extra clear that this only happens once, you could write it like:
+
+```csharp
+private void Awake()
+{
+    if (Instance == null)
+    {
+        // First time — initialize
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
+    else if (Instance != this)
+    {
+        // Duplicate found — destroy it
+        Destroy(gameObject);
+    }
+}
+```
+
+This reads more intuitively: "If there's no instance, create one. If there is one and it's not me, destroy me."
+
+But **your original version is functionally identical and perfectly fine.** It's a matter of readability preference.
+
+---
+
+## Summary
+
+| Question | Answer |
+|----------|--------|
+| **Need `return`?** | **Yes** — prevents overwriting `Instance` reference |
+| **Only set DontDestroyOnLoad once?** | **Already happens** — duplicates are destroyed before reaching it |
+| **Can optimize?** | **Your code is already optimized** |
+
+Your original code is correct and efficient! 👍
+
+--------------------
+
+Korisnički upit 6 od 7 - 20. 07. 2026. 14:28:46:
+does gamemanager actually needs to be singleton? sure i wont have more than one instance but its more work and the instance gets automatically created when the leve is loaded so singleton is not necessary right?
+
+Claude Haiku 4.5:
+# GameManager Doesn't Need to Be a Singleton
+
+**You're absolutely right.** GameManager does not need to be a singleton, and removing it simplifies your code significantly.
+
+---
+
+## Why It's Not Necessary
+
+| Aspect | Reality |
+|--------|---------|
+| **Multiple instances?** | No — one GameManager per level, automatically created when scene loads |
+| **Cross-scene access?** | No — GameManager only manages the current level; it doesn't persist |
+| **Need for static reference?** | No — other scripts (Player, Enemy) can find it via `FindObjectOfType<GameManager>()` |
+| **Added complexity** | Yes — singleton pattern adds boilerplate for zero benefit |
+
+**Bottom line:** Since GameManager is scene-specific and created fresh each time, there's no reason to make it a singleton.
+
+---
+
+## How to Refactor
+
+**Remove the singleton pattern from GameManager:**
+
+```csharp
+public class GameManager : MonoBehaviour
+{
+    [SerializeField] private GameObject enemyPrefab;
+    [SerializeField] private Transform spawnPoint;
+    
+    private DifficultySettings currentDifficulty;
+    private Player player;
+
+    private void Start()
+    {
+        // Get difficulty from MainManager
+        currentDifficulty = MainManager.Instance.GetSelectedDifficulty();
+        
+        // Initialize player and spawn enemies
+        InitializePlayer();
+        SpawnEnemies();
+    }
+
+    private void InitializePlayer()
+    {
+        // Find player in scene and initialize it
+        player = FindObjectOfType<Player>();
+        if (player != null)
+        {
+            player.Initialize(currentDifficulty);
+        }
+    }
+
+    private void SpawnEnemies()
+    {
+        for (int i = 0; i < currentDifficulty.enemyCount; i++)
+        {
+            GameObject enemyObj = Instantiate(enemyPrefab, spawnPoint.position, Quaternion.identity);
+            Enemy enemy = enemyObj.GetComponent<Enemy>();
+            if (enemy != null)
+            {
+                enemy.Initialize(currentDifficulty, this);
+            }
+        }
+    }
+}
+```
+
+---
+
+## How Other Scripts Access GameManager
+
+**Player.cs or Enemy.cs can find it via `FindObjectOfType`:**
+
+```csharp
+public class Enemy : MonoBehaviour
+{
+    private GameManager gameManager;
+
+    public void Initialize(DifficultySettings difficulty, GameManager manager)
+    {
+        gameManager = manager;
+        // Set stats from difficulty
+    }
+    
+    // Or find it dynamically if needed:
+    private void Start()
+    {
+        gameManager = FindObjectOfType<GameManager>();
+    }
+}
+```
+
+**Alternatively, pass the reference during initialization** (as your current design does) — this is actually cleaner than `FindObjectOfType`.
+
+---
+
+## Summary
+
+**Remove the singleton from GameManager.** Your code will be:
+- ✅ Simpler (no Instance property, no Awake checks)
+- ✅ Clearer (GameManager is just a regular scene manager)
+- ✅ More flexible (easier to test, easier to have multiple GameManagers in different scenes)
+- ✅ Just as functional (one GameManager per level works perfectly)
+
+**Keep MainManager as a singleton** — it needs to persist across scenes and hold the difficulty selection.
+
+--------------------
+
+Korisnički upit 7 od 7 - 20. 07. 2026. 14:30:35:
+but just be sure there is no way for me to pass any sort of data or object/struct when i call method SceneManager.LoadScene(2) where 2 is index of second level? i abosulutely must have mainmanager to be singleton that is persistent?
+
+Claude Haiku 4.5:
+# Passing Data with SceneManager.LoadScene()
+
+**Good news: `SceneManager.LoadScene()` has no built-in parameters for passing data.** But you have several alternatives to a persistent singleton.
+
+---
+
+## Why You Don't Absolutely Need a Persistent MainManager Singleton
+
+| Method | Pros | Cons |
+|--------|------|------|
+| **Persistent Singleton (current)** | Simple, data always available | Overkill for one-way data flow |
+| **PlayerPrefs** | Built-in Unity, persists across scenes | Limited data types (int, float, string) |
+| **ScriptableObject reference** | No singleton needed, clean | Requires manual setup in prefab |
+| **Static class** | No GameObject overhead | Less conventional |
+| **JSON/Save file** | Flexible, persists between sessions | Overkill for simple difficulty |
+
+---
+
+## Alternative 1: ScriptableObject (Simplest, No Singleton Needed)
+
+**Create a ScriptableObject to hold the selected difficulty:**
+
+```csharp
+// DifficultyManager.cs - NOT a MonoBehaviour, just data
+[CreateAssetMenu(fileName = "DifficultyManager", menuName = "Game/Difficulty Manager")]
+public class DifficultyManager : ScriptableObject
+{
+    public DifficultySettings selectedDifficulty;
+}
+```
+
+**In MainMenu, assign it:**
+
+```csharp
+public class DifficultySelector : MonoBehaviour
+{
+    [SerializeField] private DifficultyManager difficultyManager;
+    
+    public void SelectEasy()
+    {
+        difficultyManager.selectedDifficulty = easySettings;
+        SceneManager.LoadScene(2);
+    }
+}
+```
+
+**In GameManager, read it:**
+
+```csharp
+public class GameManager : MonoBehaviour
+{
+    [SerializeField] private DifficultyManager difficultyManager;
+    
+    private void Start()
+    {
+        DifficultySettings difficulty = difficultyManager.selectedDifficulty;
+        // Use difficulty...
+    }
+}
+```
+
+**Advantage:** No singleton, no persistence needed — the ScriptableObject asset itself holds the value.
+
+---
+
+## Alternative 2: PlayerPrefs (Built-in, Simple)
+
+**Store difficulty index in PlayerPrefs:**
+
+```csharp
+// In DifficultySelector
+public void SelectDifficulty(int difficultyIndex)
+{
+    PlayerPrefs.SetInt("SelectedDifficulty", difficultyIndex);
+    SceneManager.LoadScene(2);
+}
+
+// In GameManager
+private void Start()
+{
+    int difficultyIndex = PlayerPrefs.GetInt("SelectedDifficulty", 0); // Default to 0
+    DifficultySettings difficulty = GetDifficultyByIndex(difficultyIndex);
+}
+```
+
+**Advantage:** No extra objects needed, built-in Unity feature.
+
+---
+
+## Alternative 3: Static Class (No GameObject)
+
+```csharp
+public static class GameSettings
+{
+    public static DifficultySettings selectedDifficulty;
+}
+
+// In DifficultySelector
+public void SelectDifficulty(DifficultySettings difficulty)
+{
+    GameSettings.selectedDifficulty = difficulty;
+    SceneManager.LoadScene(2);
+}
+
+// In GameManager
+private void Start()
+{
+    DifficultySettings difficulty = GameSettings.selectedDifficulty;
+}
+```
+
+**Advantage:** Lightweight, no GameObject overhead.
+
+---
+
+## My Recommendation
+
+**For your use case, I'd suggest the ScriptableObject approach (Alternative 1):**
+- ✅ No singleton boilerplate
+- ✅ Clean and conventional
+- ✅ Easy to debug (you can inspect it in the editor)
+- ✅ No persistence needed — it's just a reference holder
+
+**That said, your current persistent MainManager singleton works fine too.** It's not *wrong*, just more complex than necessary for this scenario.
+
+---
+
+## Bottom Line
+
+**You do NOT absolutely need a persistent singleton.** `SceneManager.LoadScene()` has no data-passing mechanism, but you have several clean alternatives that don't require singleton pattern overhead. Choose the one that feels most natural to your workflow.

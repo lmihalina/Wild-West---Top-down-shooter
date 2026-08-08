@@ -1,0 +1,46 @@
+﻿Ovaj je razgovor generiran s Duck.ai (https://duck.ai) pomoću Anthropic modela Claude Haiku 4.5. AI čavrljanja mogu prikazivati netočne ili uvredljive informacije (pogledajte https://duckduckgo.com/duckai/privacy-terms za više informacija).
+
+====================
+
+Korisnički upit 1 od 1 - 29. 07. 2026. 12:30:58:
+i am making a 2d top down shooter game in unity and i made game world with cinemachine camera 2 component that follows the player game object. the problem im having is after setting up the camera by following official unity tutorial from rubys adventure the player gets blurred when moving. how can i fix this  
+
+Claude Haiku 4.5:
+The blur you're experiencing when the player moves in your top-down shooter is likely a **motion blur effect** caused by the camera's frame rate not syncing properly with the physics update rate, or it could be caused by an actual motion blur post-processing effect. Here are the main solutions:
+
+## Fix the Physics-Camera Sync Issue
+
+This is the most common cause. **Make sure your Fixed Timestep matches your target frame rate:**
+
+1. Go to **Edit > Project Settings > Time**
+2. Set **Fixed Timestep** to **0.02** (for 50 physics updates per second, which works well at 60 FPS)
+3. Alternatively, set it to **0.0167** for roughly 60 physics updates per second
+
+**Why this matters:** If your physics (where the player moves) updates at a different rate than your camera follows, the camera will lag slightly behind, creating blur as it "catches up."
+
+---
+
+## Adjust the Cinemachine Camera Settings
+
+Your Cinemachine component has smoothing settings that might be too aggressive:
+
+1. **In the Cinemachine Virtual Camera component**, find the **Body** section
+2. Reduce the **Damping** values (especially **X Damping** and **Y Damping**) to lower values like **0.1** instead of the default
+3. Alternatively, change the Body type from "Framing Transposer" to **"Hard Lock"** if you want zero lag (the camera will snap directly to the player with no smoothing)
+
+If you want smoothing but less blur, try values around **0.05–0.15** for damping instead of higher values.
+
+---
+
+## Check for Motion Blur Post-Processing
+
+1. Look in your scene for a **Post-process Volume** GameObject
+2. If you have motion blur enabled in the post-processing settings, **disable it** or reduce its intensity
+
+---
+
+## Move Player in LateUpdate Instead of Update
+
+If your player movement code is in `Update()`, try moving it to `LateUpdate()` instead. This ensures the camera updates after the player position changes, reducing perceived lag.
+
+**Which solution should you try first?** Start with the **Fixed Timestep** setting (most likely culprit), then adjust Cinemachine damping if that doesn't fully resolve it. Let me know if you're still seeing blur after these changes!
